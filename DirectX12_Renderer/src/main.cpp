@@ -1,9 +1,15 @@
-#include <windows.h>
-#include <iostream>
-
-int main(int argc, char* argv[])
+#include "Window_Manager.h"
+int WINAPI WinMain(
+    HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    PSTR lpCmdLine,
+    int nCmdShow)
 {
-    std::cout << "Hello World" << std::endl;
+    //Create Window Class
+    Window_Manager wm(hInstance);
+    
+    wm.create_window();
+    while ( true ) {}
     
     return 0;
 }
