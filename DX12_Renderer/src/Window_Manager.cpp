@@ -1,4 +1,5 @@
 #include "Window_Manager.h"
+#include <windowsx.h>
 
 Window_Manager::Window_Manager(HINSTANCE hInstance) : m_hInstance(hInstance)
 {
@@ -17,7 +18,7 @@ bool Window_Manager::create_window()
     MSG msg = { 0 };
     while( GetMessage(&msg, nullptr, 0, 0) > 0)
     {
-        TranslateMessage(&msg);
+        TranslateMessage(&msg); //Generated WM_CHAR messages from KEYDOWN events. Maybe other stuff
         DispatchMessage(&msg);
     }
     
@@ -54,17 +55,30 @@ bool Window_Manager::create_window_handler()
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         nullptr, nullptr, m_hInstance, nullptr
     );
-    return &m_window_handler != nullptr;
+    return m_window_handler != nullptr;
 }
 
 LRESULT Window_Manager::window_event_handler(HWND window_handler, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch( msg )
     {
+    case WM_MOUSEMOVE:
+        handle_mouse_move(wparam, lparam);
+        break;
+    case WM_LBUTTONDOWN:
+        handle_left_click(wparam, lparam);
+        break;
+    case WM_RBUTTONDOWN:
+        handle_right_click(wparam, lparam);
+        break;
+    case WM_CHAR:
+        handle_keystroke_input(wparam, lparam);
+        break;
     case WM_DESTROY:
         handle_destroy();
         break;
-        
+    default:
+        break;
     }
     return DefWindowProc(window_handler, msg, wparam, lparam);
 }
@@ -72,4 +86,28 @@ LRESULT Window_Manager::window_event_handler(HWND window_handler, UINT msg, WPAR
 void Window_Manager::handle_destroy()
 {
     PostQuitMessage( 0 );
+}
+
+void Window_Manager::handle_mouse_move(WPARAM wparam, LPARAM lparam)
+{
+    int x = GET_X_LPARAM(lparam);
+    int y = GET_Y_LPARAM(lparam);
+}
+
+void Window_Manager::handle_keystroke_input(WPARAM wparam, LPARAM lparam)
+{
+    char input_char = wparam;
+    
+}
+
+void Window_Manager::handle_left_click(WPARAM wparam, LPARAM lparam)
+{
+    int x = GET_X_LPARAM(lparam);
+    int y = GET_Y_LPARAM(lparam);
+}
+
+void Window_Manager::handle_right_click(WPARAM wparam, LPARAM lparam)
+{
+    int x = GET_X_LPARAM(lparam);
+    int y = GET_Y_LPARAM(lparam);
 }

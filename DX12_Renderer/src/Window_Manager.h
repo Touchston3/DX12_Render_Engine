@@ -17,7 +17,10 @@ private:
     //Message Handling
     static LRESULT CALLBACK window_event_handler(HWND window_handler, UINT msg, WPARAM wparam, LPARAM lparam); //Windows callback for message handling
     static void handle_destroy();
-    
+    static void handle_mouse_move(WPARAM wparam, LPARAM lparam);
+    static void handle_keystroke_input(WPARAM wparam, LPARAM lparam);
+    static void handle_left_click(WPARAM wparam, LPARAM lparam);
+    static void handle_right_click(WPARAM wparam, LPARAM lparam);
 private:
     HINSTANCE m_hInstance;
     WNDCLASSEX m_window_class;
