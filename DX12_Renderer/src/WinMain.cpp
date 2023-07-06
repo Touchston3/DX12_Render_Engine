@@ -9,7 +9,6 @@ int WINAPI WinMain(
     Window_Manager wm(hInstance);
     
     wm.create_window();
-    while ( true ) {}
     
     return 0;
 }

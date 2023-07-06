@@ -1,4 +1,5 @@
 .git
 .idea
 bin
-Intermediates
+itermediates
+
