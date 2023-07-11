@@ -1,9 +1,15 @@
 #include "Window_Manager.h"
+#include <iostream>
+#include <string>
 #include <windowsx.h>
 
 Window_Manager::Window_Manager(HINSTANCE hInstance) : m_hInstance(hInstance)
 {
-    
+}
+
+Window_Manager::~Window_Manager()
+{
+    DestroyWindow(m_window_handler);
 }
 
 bool Window_Manager::create_window()
@@ -104,6 +110,7 @@ void Window_Manager::handle_left_click(WPARAM wparam, LPARAM lparam)
 {
     int x = GET_X_LPARAM(lparam);
     int y = GET_Y_LPARAM(lparam);
+    Logger::get_instance()->log(__LINE__, LOG, "testing");
 }
 
 void Window_Manager::handle_right_click(WPARAM wparam, LPARAM lparam)
