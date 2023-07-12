@@ -31,3 +31,35 @@ private:
     char* m_windowname;
 
 };
+
+
+/*
+class Window_Manager : Singleton
+{
+    class Win32_Window_Class : Singleton
+    {
+        m_class_definition;
+        m_class_name;
+        register_class();
+        unregister_class();
+    }
+    class Win32_Window_Object
+    {
+        m_class_name;
+        m_window_name;
+        m_window_handler;
+    }
+    class Win32_Message_Handler : Publisher, Singleton
+    {
+        
+    }
+    public:
+    void attach_event_handler(std::function<void(Event&)> handler_cb)
+    
+    private:
+    m_hInstance;
+    m_window_class;
+    m_window_object;
+    m_message_handler;
+}
+*/
