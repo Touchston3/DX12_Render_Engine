@@ -162,6 +162,7 @@
     <ClCompile Include="src\Input_Manager.cpp" />
     <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\Publisher.cpp" />
+    <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\Window_Manager.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClInclude Include="src\Logger.h" />
     <ClInclude Include="src\Publisher.h" />
     <ClInclude Include="src\Utils.h" />
+    <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\Window_Manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

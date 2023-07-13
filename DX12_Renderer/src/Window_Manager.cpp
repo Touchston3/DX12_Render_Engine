@@ -102,8 +102,7 @@ void Window_Manager::handle_mouse_move(WPARAM wparam, LPARAM lparam)
 
 void Window_Manager::handle_keystroke_input(WPARAM wparam, LPARAM lparam)
 {
-    char input_char = wparam;
-    
+    char input_char = wparam; 
 }
 
 void Window_Manager::handle_left_click(WPARAM wparam, LPARAM lparam)

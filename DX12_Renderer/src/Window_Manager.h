@@ -34,25 +34,18 @@ private:
 
 
 /*
-class Window_Manager : Singleton
+class Window
 {
-    class Win32_Window_Class : Singleton
+    class Win32_Window_Class 
     {
         m_class_definition;
         m_class_name;
         register_class();
         unregister_class();
+        static default_msg_handler()
+        static actual_msg_handler() { m_cb(Event e()); }
     }
-    class Win32_Window_Object
-    {
-        m_class_name;
-        m_window_name;
-        m_window_handler;
-    }
-    class Win32_Message_Handler : Publisher, Singleton
-    {
-        
-    }
+
     public:
     void attach_event_handler(std::function<void(Event&)> handler_cb)
     
