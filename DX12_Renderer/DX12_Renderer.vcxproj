@@ -80,7 +80,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\a$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)itermediates\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>src\WinMain.cpp</TargetName>
+    <TargetName>WinMain.cpp</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
