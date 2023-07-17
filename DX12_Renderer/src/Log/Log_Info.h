@@ -3,15 +3,16 @@
 
 enum class Log_Level
 {
-    Dump = 0,
-    Warning,
-    Error,
+    None = 0,
     Fatal,
+    Error,
+    Warning,
+    Info,
 };
 struct Log_Info
 {
     int m_line_number;
-    std::string m_function_name;
+    std::wstring m_function_name;
     Log_Level m_log_level;
-    std::string message;
+    std::wstring message;
 };

@@ -1,49 +1,54 @@
 #include "Log_Manager.h"
-
-#include <iostream>
+#include "Log_Info.h"
+#include "Log_Target.h"
+#include "Console_Log_Target.h"
+#include "Debugger_Log_Target.h"
 
 namespace void_renderer
 {
-    void Log_Manager::create_console()
+    Log_Manager::~Log_Manager()
     {
-        //Check if console
-        AllocConsole();
-        AttachConsole(GetCurrentProcessId());
-        FILE* console_stream_handler;
-        if(!freopen_s(&console_stream_handler, "CON", "w", stdout))
+        for(auto iterator = m_log_targets.begin(); iterator != m_log_targets.end(); ++iterator)
         {
-        
+            delete(*iterator);
         }
-        m_console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     }
 
-    void Log_Manager::log(int line_number, Log_Level level, std::string msg)
+    void Log_Manager::log(Log_Info& log_info)
     {
-        set_color(level);
-        std::cout << "From line number: " << line_number << ": " << msg << std::endl;
-    
-    }
-
-    Log_Manager::Log_Manager()
-    {
-    
-    }
-
-    void Log_Manager::set_color(Log_Level level)
-    {
-        switch (level)
+        //Determine if we should log this info.
+        if( log_info.m_log_level <= m_application_log_level )
         {
-        case LOG:
-            SetConsoleTextAttribute(m_console_handle, FOREGROUND_GREEN);
-            break;
-        case WARNING:
-            SetConsoleTextAttribute(m_console_handle, FOREGROUND_RED | FOREGROUND_GREEN);
-            break;
-        case FAIL:
-            SetConsoleTextAttribute(m_console_handle, FOREGROUND_RED);
-            break;
-        default:
+            //If we should then log to each active log target
+            for(auto iterator = m_log_targets.begin(); iterator != m_log_targets.end(); ++iterator)
+            {
+                (*iterator)->log_info(log_info);
+            }
+        }
+    }
+
+    void Log_Manager::add_log_target(Log_Target log_target, std::wstring target_name)
+    {
+        switch(log_target)
+        {
+        case Log_Target::Console:
+            {
+                m_log_targets.push_back(new Console_Log_Target(target_name));
+                break;
+            }
+        case Log_Target::Debugger:
+            {
+                m_log_targets.push_back(new Debugger_Log_Target(target_name));
+                break;
+            }
+        case Log_Target::File:
             break;
         }
+    }
+
+    Log_Manager::Log_Manager() :
+        m_application_log_level(Log_Level::None)
+    {
+    
     }
 }

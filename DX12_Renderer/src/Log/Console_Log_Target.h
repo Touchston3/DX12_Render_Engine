@@ -1,10 +1,10 @@
 #pragma once
 #include "Log_Target.h"
 #include <windows.h>
-class Console_Log_Target : I_Log_Target
+class Console_Log_Target : public I_Log_Target
 {
 public:
-    Console_Log_Target();
+    Console_Log_Target(std::wstring target_name);
     ~Console_Log_Target() override;
 
     void log_info(Log_Info& log_info) override;
