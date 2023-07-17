@@ -8,13 +8,17 @@ void Input_Manager::handle_window_input(Event& e)
     case Event_Type::VOID_MOUSE_MOVE:
         Logger::get_instance()->log(__LINE__, LOG, "Mouse Move");
         break;
-    default:
+    case Event_Type::VOID_KEY_EVENT:
+        OutputDebugStringW(L"TESTING"); //This works. I am still not sure how I want to do debugging
+        break;
+    case Event_Type::VOID_MOUSE_CLICK:
         break;
     }
 }
 
 Input_Manager::~Input_Manager()
 {
+    
 }
 
 Input_Manager::Input_Manager()
