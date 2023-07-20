@@ -27,11 +27,15 @@ namespace void_renderer
         Window(HINSTANCE hInstance);
         Window(HINSTANCE hInstance, Win32_Window_Class window_class);
         void tmp_window_loop();
-        HWND get_window_handler() const { return m_window_handler; } 
+        HWND get_window_handler() const { return m_window_handler; }
+
+        bool is_closed();
+        void handle_events();
     private:
         const wchar_t* CLASSNAME = L"Main_Window";
         HINSTANCE m_hInstance;
         Win32_Window_Class m_window_class;
         HWND m_window_handler;
+        MSG m_msg;
     };
 }

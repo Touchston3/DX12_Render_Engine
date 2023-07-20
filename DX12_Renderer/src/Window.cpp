@@ -75,6 +75,7 @@ Window::Window(HINSTANCE hInstance) :
     ))
 {
     assert(m_window_handler != nullptr);
+    ShowWindow(m_window_handler, SW_SHOW);
 }
 
 Window::Window(HINSTANCE hInstance, Win32_Window_Class window_class) :
@@ -100,6 +101,17 @@ void Window::tmp_window_loop()
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+}
+
+bool Window::is_closed()
+{
+    return GetMessage(&m_msg, nullptr, 0, 0) <= 0;    
+}
+
+void Window::handle_events()
+{
+    TranslateMessage(&m_msg);
+    DispatchMessage(&m_msg);
 }
 
 void Window::attach_event_handler(std::function<void(Event&)> handler_cb)

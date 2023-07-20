@@ -1,5 +1,4 @@
 #include "Graphics_Manager.h"
-#include <dxgi1_6.h>
 #include "../Window.h"
 #include "../Input_Manager.h"
 
@@ -7,101 +6,93 @@
 #pragma comment(lib, "D3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
-void Graphics_Manager::init(HWND* const window_handle, HINSTANCE hInstance)
+void Graphics_Manager::init(HWND window_handle)
 {
-    
-    void_renderer::Window window(hInstance);
-    window.attach_event_handler(void_renderer::Input_Manager::handle_window_input); //I feel like I shouldn't need this to be a static method.
-    
-    
-    const UINT buffer_count = 2;
     //Enable Debug
-    ComPtr<ID3D12Debug> debug_controller;
-    D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller));
-    debug_controller->EnableDebugLayer();
-    
-    //Create Device (Check notes as to what this is)
+    const UINT buffer_count = 2;
+    {
+        ComPtr<ID3D12Debug> debug_controller;
+        D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller));
+        debug_controller->EnableDebugLayer();
+    }
+    //Create Device (Check notes as to what this is) and dxgi factory
     //This is probably not the correct way to do this. We should actually use ID3D12Adapter instead of this generic device. Just requires more work
-    ComPtr<IDXGIFactory4> dxgi_factory;
-    CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&dxgi_factory));
-
-    ComPtr<ID3D12Device2> device;
-    D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device));
+    D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device));
+    CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_dxgi_factory));
     
     //Create command queue
-    ComPtr<ID3D12CommandQueue> command_queue;
-    const D3D12_COMMAND_QUEUE_DESC  command_queue_desc =
     {
-        .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
-        .Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,
-        .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
-        .NodeMask = 0,
-    };
-    device->CreateCommandQueue(&command_queue_desc, IID_PPV_ARGS(&command_queue));
-    
+        const D3D12_COMMAND_QUEUE_DESC command_queue_desc =
+        {
+            .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
+            .Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,
+            .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
+            .NodeMask = 0,
+        };
+        m_device->CreateCommandQueue(&command_queue_desc, IID_PPV_ARGS(&m_command_queue));
+    }
     //Create Swap Chain
     //Interesting how DXGI descriptions cannot be const. Also the factory works a little different than device
-    ComPtr<IDXGISwapChain3> swap_chain;
-    ComPtr<IDXGISwapChain> tmp_swap_chain;
-    DXGI_SWAP_CHAIN_DESC swap_chain_desc =
     {
-        .BufferDesc =
+        ComPtr<IDXGISwapChain> tmp_swap_chain;
+        DXGI_SWAP_CHAIN_DESC swap_chain_desc =
         {
-            .Width = 1920,
-            .Height = 1080,
-            .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-        },
-        .SampleDesc =
-        {
-            .Count = 1,
-        },
-        .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-        .BufferCount = buffer_count,
-        .OutputWindow = window.get_window_handler(),
-        .Windowed = TRUE,
-        .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
-    };
-    dxgi_factory->CreateSwapChain(command_queue.Get(), &swap_chain_desc, &tmp_swap_chain); //Investigate SwapChainAs() method for switching b/w implimentations
-    tmp_swap_chain.As(&swap_chain); //Why the fuck can I not call tmp_swap_chain.Get()? Why do I need to also free this com object as well? Is that it?
-    //Create Render Target View/descriptor array (heap)
-    ComPtr<ID3D12DescriptorHeap> descriptor_heap;
-    const D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc =
-    {
-        .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-        .NumDescriptors = buffer_count, //This is the number of frame buffers you have
-    };
-    device->CreateDescriptorHeap(&descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap));
-    
-    const UINT descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV); //This is based on individual hardware
-    
-    //Create RTV for each frame (frame buffer)
-    ComPtr<ID3D12Resource> frame_buffer_descriptors[buffer_count];
-    CD3DX12_CPU_DESCRIPTOR_HANDLE descriptor_handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-    for( UINT i = 0; i < buffer_count; i++ )
-    {
-        swap_chain->GetBuffer(i, IID_PPV_ARGS(&frame_buffer_descriptors[i]));
-        device->CreateRenderTargetView(frame_buffer_descriptors[i].Get(), nullptr, descriptor_handle);
-        descriptor_handle.Offset(1, descriptor_size);
+            .BufferDesc =
+            {
+                .Width = 1920,
+                .Height = 1080,
+                .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+            },
+            .SampleDesc =
+            {
+                .Count = 1,
+            },
+            .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+            .BufferCount = buffer_count,
+            .OutputWindow = window_handle,
+            .Windowed = TRUE,
+            .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
+        };
+        m_dxgi_factory->CreateSwapChain(m_command_queue.Get(), &swap_chain_desc, &tmp_swap_chain); //Investigate SwapChainAs() method for switching b/w implimentations
+        tmp_swap_chain.As(&m_swap_chain); //Why the fuck can I not call tmp_swap_chain.Get()? Why do I need to also free this com object as well? Is that it?
     }
     
+    //Create Render Target View/descriptor array (heap)
+    {
+        const D3D12_DESCRIPTOR_HEAP_DESC rtv_heap_descriptor =
+        {
+            .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+            .NumDescriptors = buffer_count, //This is the number of frame buffers you have
+        };
+    
+        m_device->CreateDescriptorHeap(&rtv_heap_descriptor, IID_PPV_ARGS(&m_rtv_heap));
+        m_rtv_size = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV); //This is based on individual hardware
+    }    
+    //Create RTV for each frame (frame buffer)
+    {
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(m_rtv_heap->GetCPUDescriptorHandleForHeapStart());
+        for( UINT i = 0; i < buffer_count; i++ )
+        {
+            m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_rtvs[i]));
+            m_device->CreateRenderTargetView(m_rtvs[i].Get(), nullptr, rtv_handle);
+            rtv_handle.Offset(1, m_rtv_size);
+        }
+    }    
     //Create command allacator and command list
-    ComPtr<ID3D12CommandAllocator> command_allocator;
-    device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&command_allocator));
+    m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator));
 
-    ComPtr<ID3D12GraphicsCommandList> command_list;
-    device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator.Get(), nullptr, IID_PPV_ARGS(&command_list));
-    command_list->Close(); //Beginning of rendering loop requires command loop closed state
+    m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_command_allocator.Get(),nullptr, IID_PPV_ARGS(&m_command_list));
+    m_command_list->Close(); //Beginning of rendering loop requires command loop closed state
     
     //Create fence ( syncs CPU and GPU with flags) and Fence event (that we wait for to sync)
-    ComPtr<ID3D12Fence> fence;
-    device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+    m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
 
-    HANDLE fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-    if( fence_event == nullptr )
+    m_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    if( m_fence_event == nullptr )
     {
         //Error
     }
-    
+
         //Empty root signature - defines resources bound to pipeline
 
         //Compile shaders
@@ -120,13 +111,15 @@ void Graphics_Manager::init(HWND* const window_handle, HINSTANCE hInstance)
     //----------------------------------------------------
     //Temp render loop
     //----------------------------------------------------
-    ShowWindow(window.get_window_handler(), SW_SHOW);
-    UINT64 fence_count = 0;
-    while( true )
-    {
-        ComPtr<ID3D12Resource> back_frame_buffer_descriptor = frame_buffer_descriptors[swap_chain->GetCurrentBackBufferIndex()];
-        command_allocator->Reset();
-        command_list->Reset(command_allocator.Get(), nullptr);
+    
+}
+
+
+void Graphics_Manager::update()
+{
+        ComPtr<ID3D12Resource> back_frame_buffer_descriptor = m_rtvs[m_swap_chain->GetCurrentBackBufferIndex()];
+        m_command_allocator->Reset();
+        m_command_list->Reset(m_command_allocator.Get(), nullptr);
 
         //Clear Render Target
         const CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition
@@ -135,13 +128,13 @@ void Graphics_Manager::init(HWND* const window_handle, HINSTANCE hInstance)
             D3D12_RESOURCE_STATE_PRESENT,
             D3D12_RESOURCE_STATE_RENDER_TARGET
         );
-        command_list->ResourceBarrier(1, &barrier);
+        m_command_list->ResourceBarrier(1, &barrier);
 
         FLOAT clear_color[] = { 0.4f, 0.6f, 0.9f, 1.0f };
 
         
-        CD3DX12_CPU_DESCRIPTOR_HANDLE tmp_descriptor_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(descriptor_heap->GetCPUDescriptorHandleForHeapStart(), swap_chain->GetCurrentBackBufferIndex(), descriptor_size);
-        command_list->ClearRenderTargetView(tmp_descriptor_handle, clear_color, 0, nullptr);
+        CD3DX12_CPU_DESCRIPTOR_HANDLE tmp_descriptor_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtv_heap->GetCPUDescriptorHandleForHeapStart(), m_swap_chain->GetCurrentBackBufferIndex(), m_rtv_size);
+        m_command_list->ClearRenderTargetView(tmp_descriptor_handle, clear_color, 0, nullptr);
 
         const CD3DX12_RESOURCE_BARRIER second_barrier = CD3DX12_RESOURCE_BARRIER::Transition
         (
@@ -149,27 +142,20 @@ void Graphics_Manager::init(HWND* const window_handle, HINSTANCE hInstance)
             D3D12_RESOURCE_STATE_RENDER_TARGET,
             D3D12_RESOURCE_STATE_PRESENT
         );
-        command_list->ResourceBarrier(1, &second_barrier);
+        m_command_list->ResourceBarrier(1, &second_barrier);
 
-        command_list->Close();
-        ID3D12CommandList* const command_lists[] = { command_list.Get() };
-        command_queue->ExecuteCommandLists(1, command_lists);
-        command_queue->Signal(fence.Get(), fence_count++);
+        m_command_list->Close();
+        ID3D12CommandList* const command_lists[] = { m_command_list.Get() };
+        m_command_queue->ExecuteCommandLists(1, command_lists);
+        m_command_queue->Signal(m_fence.Get(), m_fence_count++);
 
-        swap_chain->Present(0, 0);
+        m_swap_chain->Present(0, 0);
 
-        fence->SetEventOnCompletion(fence_count - 1, fence_event);
-        if( WaitForSingleObject(fence_event, INFINITE) == WAIT_FAILED)
+        m_fence->SetEventOnCompletion(m_fence_count - 1, m_fence_event);
+        if( WaitForSingleObject(m_fence_event, INFINITE) == WAIT_FAILED)
         {
             //ERROR
         }
-    }
-    
-}
-
-
-void Graphics_Manager::update()
-{
     //Modify Constants (I think these are opengl uniforms)
 
     //Modify vbuffers, ibuffers etc...
@@ -209,7 +195,8 @@ void Graphics_Manager::close()
     //close event handle. WTF is this event handle. 
 }
 
-Graphics_Manager::Graphics_Manager()
+Graphics_Manager::Graphics_Manager() :
+    m_rtv_size(0)
 {
 }
 
