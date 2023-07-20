@@ -1,12 +1,15 @@
 #pragma once
 #include "Log_Info.h"
-// Ok, so this is going to need a way to enable, a way to write, possible color config, a way to set severity
+
+
 enum class Log_Target
 {
     Console = 0,
     Debugger,
     File,
 };
+
+//TODO: Add color configuration for log targets
 
 class I_Log_Target
 {

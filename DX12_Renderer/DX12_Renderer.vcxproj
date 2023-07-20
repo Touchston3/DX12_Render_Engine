@@ -81,6 +81,8 @@
     <OutDir>$(SolutionDir)bin\a$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)itermediates\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>WinMain.cpp</TargetName>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -112,7 +114,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Event.cpp" />
+    <ClCompile Include="src\Graphics\Graphics_Manager.cpp" />
     <ClCompile Include="src\Input_Manager.cpp" />
     <ClCompile Include="src\Log\Console_Log_Target.cpp" />
     <ClCompile Include="src\Log\Debugger_Log_Target.cpp" />
@@ -244,6 +247,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Event.h" />
+    <ClInclude Include="src\extern\d3dx12.h" />
+    <ClInclude Include="src\extern\d3dx12_barriers.h" />
+    <ClInclude Include="src\extern\d3dx12_check_feature_support.h" />
+    <ClInclude Include="src\extern\d3dx12_core.h" />
+    <ClInclude Include="src\extern\d3dx12_default.h" />
+    <ClInclude Include="src\extern\d3dx12_pipeline_state_stream.h" />
+    <ClInclude Include="src\extern\d3dx12_render_pass.h" />
+    <ClInclude Include="src\extern\d3dx12_resource_helpers.h" />
+    <ClInclude Include="src\extern\d3dx12_root_signature.h" />
+    <ClInclude Include="src\extern\d3dx12_state_object.h" />
+    <ClInclude Include="src\Graphics\Graphics_Manager.h" />
     <ClInclude Include="src\Input_Manager.h" />
     <ClInclude Include="src\Log\Console_Log_Target.h" />
     <ClInclude Include="src\Log\Debugger_Log_Target.h" />

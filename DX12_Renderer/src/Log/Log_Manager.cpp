@@ -27,6 +27,12 @@ namespace void_renderer
         }
     }
 
+    void Log_Manager::log(int line_number, std::wstring function_name, Log_Level log_level, std::wstring message)
+    {
+        Log_Info l = { line_number, function_name, log_level, message };
+        log(l);
+    }
+
     void Log_Manager::add_log_target(Log_Target log_target, std::wstring target_name)
     {
         switch(log_target)

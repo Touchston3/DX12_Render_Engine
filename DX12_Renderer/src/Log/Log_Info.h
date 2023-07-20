@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+//DOES THIS SHIT EVEN NEED TO EXIST?
 enum class Log_Level
 {
     None = 0,
@@ -9,6 +10,7 @@ enum class Log_Level
     Warning,
     Info,
 };
+
 struct Log_Info
 {
     int m_line_number;

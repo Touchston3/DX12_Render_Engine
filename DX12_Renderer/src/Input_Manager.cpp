@@ -7,8 +7,7 @@ void Input_Manager::handle_window_input(Event& e)
     {
     case Event_Type::VOID_MOUSE_MOVE:
         {
-            Log_Info l = { __LINE__, L"test", Log_Level::Info, L"TESTING"};
-            Log_Manager::get_instance()->log(l);
+            DEBUG_LOG_FATAL( L"TESTING_FATAL")
             break;
         }
     case Event_Type::VOID_KEY_EVENT:

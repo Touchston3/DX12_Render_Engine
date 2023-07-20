@@ -1,5 +1,7 @@
 #pragma once
 
+//TODO: Fix enums
+
 namespace void_renderer
 {
     enum class Event_Type
