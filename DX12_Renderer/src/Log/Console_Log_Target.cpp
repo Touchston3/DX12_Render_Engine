@@ -19,7 +19,7 @@ Console_Log_Target::~Console_Log_Target()
 {
 }
 
-void Console_Log_Target::log_info(Log_Info& log_info)
+void Console_Log_Target::log_info(const ILog_Entry& log_info)
 {
-    std::wcout << log_info.message <<std::endl;
+    std::wcout << log_info.format() <<std::endl;
 }

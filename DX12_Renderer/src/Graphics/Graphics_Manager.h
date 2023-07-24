@@ -10,7 +10,7 @@ using Microsoft::WRL::ComPtr;
 class Graphics_Manager
 {
 public:
-    static Graphics_Manager& get_instance() { static Graphics_Manager instance; return instance; }
+    static Graphics_Manager* get() { static Graphics_Manager instance; return &instance; }
     
     Graphics_Manager(const Graphics_Manager&) = delete;
     Graphics_Manager& operator=(const Graphics_Manager&) = delete;

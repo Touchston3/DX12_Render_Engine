@@ -165,7 +165,9 @@
     <ClCompile Include="src\Input_Manager.cpp" />
     <ClCompile Include="src\Log\Console_Log_Target.cpp" />
     <ClCompile Include="src\Log\Debugger_Log_Target.cpp" />
-    <ClCompile Include="src\Log\Log_Info.cpp" />
+    <ClCompile Include="src\Log\Graphics_Error_Log_Entry.cpp" />
+    <ClCompile Include="src\Log\Log_Entry.cpp" />
+    <ClCompile Include="src\Log\Log_Entry_Builder.cpp" />
     <ClCompile Include="src\Log\Log_Manager.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -261,11 +263,14 @@
     <ClInclude Include="src\Input_Manager.h" />
     <ClInclude Include="src\Log\Console_Log_Target.h" />
     <ClInclude Include="src\Log\Debugger_Log_Target.h" />
-    <ClInclude Include="src\Log\Log_Info.h" />
+    <ClInclude Include="src\Log\Graphics_Error_Log_Entry.h" />
+    <ClInclude Include="src\Log\Log_Entry.h" />
+    <ClInclude Include="src\Log\Log_Entry_Builder.h" />
     <ClInclude Include="src\Log\Log_Manager.h" />
     <ClInclude Include="src\Log\Log_Target.h" />
     <ClInclude Include="src\Publisher.h" />
-    <ClInclude Include="src\Utils.h" />
+    <ClInclude Include="src\Utils\ISingleton.h" />
+    <ClInclude Include="src\Utils\Utils.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\Window_Manager.h" />
   </ItemGroup>

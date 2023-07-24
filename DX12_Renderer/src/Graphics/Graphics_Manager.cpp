@@ -1,6 +1,7 @@
 #include "Graphics_Manager.h"
 #include "../Window.h"
 #include "../Input_Manager.h"
+#include "../Log/Log_Manager.h"
 
 //TODO: Investigate the different numbered D3D and DXGI methods and structs
 #pragma comment(lib, "D3d12.lib")
@@ -17,8 +18,8 @@ void Graphics_Manager::init(HWND window_handle)
     }
     //Create Device (Check notes as to what this is) and dxgi factory
     //This is probably not the correct way to do this. We should actually use ID3D12Adapter instead of this generic device. Just requires more work
-    D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device));
-    CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_dxgi_factory));
+    GRAPHICS_ASSERT(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device)));
+    GRAPHICS_ASSERT(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_dxgi_factory)));
     
     //Create command queue
     {
@@ -29,7 +30,7 @@ void Graphics_Manager::init(HWND window_handle)
             .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
             .NodeMask = 0,
         };
-        m_device->CreateCommandQueue(&command_queue_desc, IID_PPV_ARGS(&m_command_queue));
+        GRAPHICS_ASSERT(m_device->CreateCommandQueue(&command_queue_desc, IID_PPV_ARGS(&m_command_queue)));
     }
     //Create Swap Chain
     //Interesting how DXGI descriptions cannot be const. Also the factory works a little different than device
@@ -53,8 +54,8 @@ void Graphics_Manager::init(HWND window_handle)
             .Windowed = TRUE,
             .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
         };
-        m_dxgi_factory->CreateSwapChain(m_command_queue.Get(), &swap_chain_desc, &tmp_swap_chain); //Investigate SwapChainAs() method for switching b/w implimentations
-        tmp_swap_chain.As(&m_swap_chain); //Why the fuck can I not call tmp_swap_chain.Get()? Why do I need to also free this com object as well? Is that it?
+        GRAPHICS_ASSERT(m_dxgi_factory->CreateSwapChain(m_command_queue.Get(), &swap_chain_desc, &tmp_swap_chain)); //Investigate SwapChainAs() method for switching b/w implimentations
+        GRAPHICS_ASSERT(tmp_swap_chain.As(&m_swap_chain)); //Why the fuck can I not call tmp_swap_chain.Get()? Why do I need to also free this com object as well? Is that it?
     }
     
     //Create Render Target View/descriptor array (heap)
@@ -65,7 +66,7 @@ void Graphics_Manager::init(HWND window_handle)
             .NumDescriptors = buffer_count, //This is the number of frame buffers you have
         };
     
-        m_device->CreateDescriptorHeap(&rtv_heap_descriptor, IID_PPV_ARGS(&m_rtv_heap));
+        GRAPHICS_ASSERT(m_device->CreateDescriptorHeap(&rtv_heap_descriptor, IID_PPV_ARGS(&m_rtv_heap)));
         m_rtv_size = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV); //This is based on individual hardware
     }    
     //Create RTV for each frame (frame buffer)
@@ -73,19 +74,19 @@ void Graphics_Manager::init(HWND window_handle)
         CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(m_rtv_heap->GetCPUDescriptorHandleForHeapStart());
         for( UINT i = 0; i < buffer_count; i++ )
         {
-            m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_rtvs[i]));
+            GRAPHICS_ASSERT(m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_rtvs[i])));
             m_device->CreateRenderTargetView(m_rtvs[i].Get(), nullptr, rtv_handle);
             rtv_handle.Offset(1, m_rtv_size);
         }
     }    
     //Create command allacator and command list
-    m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator));
+    GRAPHICS_ASSERT(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator)));
 
-    m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_command_allocator.Get(),nullptr, IID_PPV_ARGS(&m_command_list));
-    m_command_list->Close(); //Beginning of rendering loop requires command loop closed state
+    GRAPHICS_ASSERT(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_command_allocator.Get(),nullptr, IID_PPV_ARGS(&m_command_list)));
+    GRAPHICS_ASSERT(m_command_list->Close()); //Beginning of rendering loop requires command loop closed state
     
     //Create fence ( syncs CPU and GPU with flags) and Fence event (that we wait for to sync)
-    m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
+    GRAPHICS_ASSERT(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
 
     m_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     if( m_fence_event == nullptr )

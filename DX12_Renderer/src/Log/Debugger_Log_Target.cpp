@@ -9,7 +9,7 @@ Debugger_Log_Target::~Debugger_Log_Target()
 {
 }
 
-void Debugger_Log_Target::log_info(Log_Info& log_info)
+void Debugger_Log_Target::log_info(const ILog_Entry& log_info)
 {
-    OutputDebugStringW(log_info.message.c_str());
+    OutputDebugStringW(log_info.format().c_str());
 }

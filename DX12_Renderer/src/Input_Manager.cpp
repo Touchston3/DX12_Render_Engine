@@ -7,11 +7,12 @@ void Input_Manager::handle_window_input(Event& e)
     {
     case Event_Type::VOID_MOUSE_MOVE:
         {
-            DEBUG_LOG_FATAL( L"TESTING_FATAL")
             break;
         }
     case Event_Type::VOID_KEY_EVENT:
-        break;
+        {
+            break;
+        }
     case Event_Type::VOID_MOUSE_CLICK:
         break;
     }

@@ -7,5 +7,5 @@ public:
     Debugger_Log_Target(std::wstring target_name);
     ~Debugger_Log_Target() override;
 
-    void log_info(Log_Info& log_info) override; 
+    void log_info(const ILog_Entry& log_info) override; 
 };

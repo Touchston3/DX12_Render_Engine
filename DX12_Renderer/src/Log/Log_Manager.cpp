@@ -1,5 +1,5 @@
 #include "Log_Manager.h"
-#include "Log_Info.h"
+#include "Log_Entry.h"
 #include "Log_Target.h"
 #include "Console_Log_Target.h"
 #include "Debugger_Log_Target.h"
@@ -14,7 +14,7 @@ namespace void_renderer
         }
     }
 
-    void Log_Manager::log(Log_Info& log_info)
+    void Log_Manager::log(const ILog_Entry& log_info)
     {
         //Determine if we should log this info.
         if( log_info.m_log_level <= m_application_log_level )
@@ -25,12 +25,11 @@ namespace void_renderer
                 (*iterator)->log_info(log_info);
             }
         }
-    }
-
-    void Log_Manager::log(int line_number, std::wstring function_name, Log_Level log_level, std::wstring message)
-    {
-        Log_Info l = { line_number, function_name, log_level, message };
-        log(l);
+        //Maybe I should make this contingent on debug mode?
+        if( log_info.m_log_level == Log_Level::Fatal )
+        {
+            std::terminate();
+        }
     }
 
     void Log_Manager::add_log_target(Log_Target log_target, std::wstring target_name)
