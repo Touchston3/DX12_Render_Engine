@@ -21,10 +21,10 @@ int WINAPI WinMain(
     Graphics_Manager::get()->init(window.get_window_handler());
     while( !window.is_closed() )
     {
-        window.handle_events();
         Graphics_Manager::get()->update();
+        Graphics_Manager::get()->populate_command_list();
+        window.handle_events();
     }
-    //window.tmp_window_loop();
     
     return 0;
 }

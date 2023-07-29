@@ -26,7 +26,6 @@ namespace void_renderer
         void attach_event_handler(std::function<void(Event&)> handler_cb);
         Window(HINSTANCE hInstance);
         Window(HINSTANCE hInstance, Win32_Window_Class window_class);
-        void tmp_window_loop();
         HWND get_window_handler() const { return m_window_handler; }
 
         bool is_closed();

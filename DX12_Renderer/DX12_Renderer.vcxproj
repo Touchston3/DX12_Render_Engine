@@ -83,6 +83,10 @@
     <TargetName>WinMain.cpp</TargetName>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <ReferencePath>$(VC_ReferencesPath_x64);</ReferencePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <SourcePath>$(VC_SourcePath);</SourcePath>
+    <ExcludePath>$(CommonExcludePath);$(VC_ExecutablePath_x64);$(VC_LibraryPath_x64)</ExcludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -111,14 +115,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies);$(CoreLibraryDependencies);</AdditionalDependencies>
+      <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -162,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\Graphics\Graphics_Manager.cpp" />
+    <ClInclude Include="resources\shaders\frag.hlsl" />
     <ClCompile Include="src\Input_Manager.cpp" />
     <ClCompile Include="src\Log\Console_Log_Target.cpp" />
     <ClCompile Include="src\Log\Debugger_Log_Target.cpp" />
@@ -248,17 +256,9 @@
     <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resources\shaders\vert.hlsl" />
+    <ClInclude Include="src\d3dx12.h" />
     <ClInclude Include="src\Event.h" />
-    <ClInclude Include="src\extern\d3dx12.h" />
-    <ClInclude Include="src\extern\d3dx12_barriers.h" />
-    <ClInclude Include="src\extern\d3dx12_check_feature_support.h" />
-    <ClInclude Include="src\extern\d3dx12_core.h" />
-    <ClInclude Include="src\extern\d3dx12_default.h" />
-    <ClInclude Include="src\extern\d3dx12_pipeline_state_stream.h" />
-    <ClInclude Include="src\extern\d3dx12_render_pass.h" />
-    <ClInclude Include="src\extern\d3dx12_resource_helpers.h" />
-    <ClInclude Include="src\extern\d3dx12_root_signature.h" />
-    <ClInclude Include="src\extern\d3dx12_state_object.h" />
     <ClInclude Include="src\Graphics\Graphics_Manager.h" />
     <ClInclude Include="src\Input_Manager.h" />
     <ClInclude Include="src\Log\Console_Log_Target.h" />
