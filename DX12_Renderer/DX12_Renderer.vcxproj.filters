@@ -18,9 +18,6 @@
     <ClCompile Include="src\Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Graphics_Manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Input_Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,14 +54,17 @@
     <ClCompile Include="src\WinMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Root_Signature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resources\shaders\frag.hlsl" />
+    <ClInclude Include="resources\shaders\pixel.hlsl" />
     <ClInclude Include="resources\shaders\vert.hlsl" />
     <ClInclude Include="src\Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\Graphics_Manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Input_Manager.h">
@@ -107,6 +107,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\d3dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Root_Signature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

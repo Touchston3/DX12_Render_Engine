@@ -4,35 +4,38 @@
 
 #include "Input_Manager.h"
 #include <WinUser.h>
-
-#include "../../../../../../../../Program Files (x86)/Windows Kits/10/Include/10.0.22000.0/ucrt/assert.h"
+#include "Log/Log_Manager.h"
 
 using namespace void_renderer;
 
-Window::Win32_Window_Class::Win32_Window_Class(const wchar_t* class_name, HINSTANCE hInstance) :
+Window::Win32_Window_Class::Win32_Window_Class(std::wstring class_name, HINSTANCE hInstance) :
     m_hInstance(hInstance),
-    m_class_definition({}),
-    m_class_name(class_name)
+    m_class_name(class_name),
+    m_class_definition
+    ({
+        .cbSize = sizeof(WNDCLASSEX),
+        .style = CS_OWNDC,
+        .lpfnWndProc = DefWindowProc,
+        .cbClsExtra = 0,
+        .cbWndExtra = 0,
+        .hInstance = hInstance,
+        .hIcon = nullptr,
+        .hCursor = nullptr,
+        .hbrBackground = nullptr,
+        .lpszMenuName = nullptr,
+        .lpszClassName = class_name.c_str(),
+        .hIconSm = nullptr,
+    })
 {
-    m_class_definition.cbSize = sizeof(WNDCLASSEX);
-    m_class_definition.style = CS_HREDRAW | CS_VREDRAW;
-    m_class_definition.lpfnWndProc = DefWindowProc;
-    m_class_definition.cbClsExtra = 0;
-    m_class_definition.cbWndExtra = 0;
-    m_class_definition.hInstance = m_hInstance;
-    m_class_definition.hIcon = nullptr;
-    m_class_definition.hCursor = nullptr;
-    m_class_definition.hbrBackground = nullptr;
-    m_class_definition.lpszMenuName = nullptr;
-    m_class_definition.lpszClassName = class_name;
-    m_class_definition.hIconSm = nullptr;
-
-    assert(RegisterClassEx(&m_class_definition) != 0);
+    if (RegisterClassExW(&m_class_definition) == 0)
+    {
+        DEBUG_LOG_FATAL(L"Failed to register windows class {}", "");
+    }
 }
 
 Window::Win32_Window_Class::~Win32_Window_Class()
 {
-    UnregisterClass(m_class_name, m_hInstance);
+    UnregisterClass(m_class_name.c_str(), m_hInstance);
 }
 
 LRESULT Window::Win32_Window_Class::msg_handler(HWND window_handler, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -40,23 +43,31 @@ LRESULT Window::Win32_Window_Class::msg_handler(HWND window_handler, UINT msg, W
     switch (msg)
     {
     case WM_MOUSEMOVE:
-        {
-            Mouse_Move_Event e(nullptr, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
-            m_message_handler(e);
-            break;
-        }
+    {
+        Mouse_Move_Event e(nullptr, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+        m_message_handler(e);
+        break;
+    }
     case WM_LBUTTONDOWN:
         break;
     case WM_RBUTTONDOWN:
         break;
     case WM_CHAR:
-        {
-            Key_Event e(nullptr, 'X', Key_State::VOID_KEY_PRESSED);
-            m_message_handler(e);
-            break;
-        }
-    case WM_DESTROY:
+    {
+        Key_Event e(nullptr, 'X', Key_State::VOID_KEY_PRESSED);
+        m_message_handler(e);
         break;
+    }
+    case WM_CLOSE:
+    {
+        DestroyWindow(window_handler);
+        break;
+    }
+    case WM_DESTROY:
+    {
+        PostQuitMessage(0);
+        break;
+    }
     default:
         break;
     }
@@ -64,31 +75,40 @@ LRESULT Window::Win32_Window_Class::msg_handler(HWND window_handler, UINT msg, W
 }
 
 
-Window::Window(HINSTANCE hInstance) :
+Window::Window(int width, int height, HINSTANCE hInstance, std::wstring class_name) :
     m_hInstance(hInstance),
-    m_window_class(Win32_Window_Class(CLASSNAME, m_hInstance)),
-    m_window_handler(CreateWindowExW(
-        0, CLASSNAME, L"Renderer",
+    m_width(width),
+    m_height(height),
+    m_class_name(class_name),
+    m_window_class(Win32_Window_Class(class_name, hInstance)),
+    m_msg({}),
+    m_window_handler(CreateWindow
+    (
+        class_name.c_str(),
+        L"Void Engine",
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080,
-        nullptr, nullptr, m_hInstance, nullptr
-    ))
+        100, 100,
+        width, height,
+        nullptr,
+        nullptr,
+        hInstance,
+        nullptr)
+    ),
+    m_renderer(nullptr)
 {
-    assert(m_window_handler != nullptr);
+    if (m_window_handler == nullptr)
+    {
+        DEBUG_LOG_FATAL(L"Failed to create window {}", "");
+    }
     ShowWindow(m_window_handler, SW_SHOW);
+    this->m_renderer = new Renderer(this);
 }
 
-Window::Window(HINSTANCE hInstance, Win32_Window_Class window_class) :
-    m_hInstance(hInstance),
-    m_window_class(window_class),
-    m_window_handler(CreateWindowEx(
-        0, CLASSNAME, L"Renderer",
-        WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080,
-        nullptr, nullptr, m_hInstance, nullptr
-    ))
+Window::Window(int width, int height, HINSTANCE hInstance) : Window(width, height, hInstance, L"MAIN_WINDOW") {}
+
+Window::~Window()
 {
-    assert(m_window_handler != nullptr);
+    delete(m_renderer);
 }
 
 bool Window::is_closed()

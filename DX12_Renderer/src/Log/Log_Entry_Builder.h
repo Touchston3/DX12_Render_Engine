@@ -31,7 +31,7 @@ public:
     template <typename... Args>
     Log_Entry log_entry(const std::wstring& base_message, Args&&... args)
     {
-        const std::wstring message = format_wstring(base_message, args...);
+        const std::wstring message = void_renderer::utils::format_wstring(base_message, args...);
         Log_Entry le(m_line_number, m_function_name, m_file_name, m_log_level, message);
         clear_builder();
         return le;

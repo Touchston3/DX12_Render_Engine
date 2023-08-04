@@ -124,7 +124,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies);$(CoreLibraryDependencies);</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies);$(CoreLibraryDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
@@ -167,9 +167,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Root_Signature.cpp" />
+    <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Event.cpp" />
-    <ClCompile Include="src\Graphics\Graphics_Manager.cpp" />
-    <ClInclude Include="resources\shaders\frag.hlsl" />
+    <ClInclude Include="src\Graphics\Root_Signature.h" />
+    <ClInclude Include="src\Graphics\Renderer.h" />
+    <ClInclude Include="resources\shaders\pixel.hlsl" />
     <ClCompile Include="src\Input_Manager.cpp" />
     <ClCompile Include="src\Log\Console_Log_Target.cpp" />
     <ClCompile Include="src\Log\Debugger_Log_Target.cpp" />
@@ -259,7 +262,6 @@
     <ClInclude Include="resources\shaders\vert.hlsl" />
     <ClInclude Include="src\d3dx12.h" />
     <ClInclude Include="src\Event.h" />
-    <ClInclude Include="src\Graphics\Graphics_Manager.h" />
     <ClInclude Include="src\Input_Manager.h" />
     <ClInclude Include="src\Log\Console_Log_Target.h" />
     <ClInclude Include="src\Log\Debugger_Log_Target.h" />
