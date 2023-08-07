@@ -33,13 +33,13 @@
     <ClCompile Include="src\Log\Log_Entry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Log\Log_Entry_Builder.cpp">
+    <ClCompile Include="src\Log\Log_Builder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Log\Log_Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Log\Log_Target.cpp">
+    <ClCompile Include="src\Log\ILog_Target.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Publisher.cpp">
@@ -82,13 +82,13 @@
     <ClInclude Include="src\Log\Log_Entry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Log\Log_Entry_Builder.h">
+    <ClInclude Include="src\Log\Log_Builder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Log\Log_Manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Log\Log_Target.h">
+    <ClInclude Include="src\Log\ILog_Target.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Publisher.h">
@@ -113,6 +113,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\Root_Signature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Log\Log.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Log\Error.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

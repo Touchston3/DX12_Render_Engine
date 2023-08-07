@@ -18,7 +18,7 @@ Log_Entry::Log_Entry(int line_number, const std::wstring& function_name, const s
 
 std::wstring Log_Entry::format() const 
 {
-    return std::format(L"{}: file: {}, \n line number {} in file {}. \n {}",
+    return std::format(L"{}: file: {}, \n line number {} in file {}. \n {} \n",
         log_level_string(m_log_level),
         m_file_name,
         m_line_number,

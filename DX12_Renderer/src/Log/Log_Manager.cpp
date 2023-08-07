@@ -1,6 +1,5 @@
 #include "Log_Manager.h"
 #include "Log_Entry.h"
-#include "Log_Target.h"
 #include "Console_Log_Target.h"
 #include "Debugger_Log_Target.h"
 
@@ -14,21 +13,19 @@ namespace void_renderer
         }
     }
 
-    void Log_Manager::log(const ILog_Entry& log_info)
+    void Log_Manager::log(std::vector<ILog_Entry*> log_entries)
     {
-        //Determine if we should log this info.
-        if( log_info.m_log_level <= m_application_log_level )
+        //Determine if we should print this info.
+        for (auto entry_iterator = log_entries.begin(); entry_iterator != log_entries.end(); ++entry_iterator)
         {
-            //If we should then log to each active log target
-            for(auto iterator = m_log_targets.begin(); iterator != m_log_targets.end(); ++iterator)
+            if ((*entry_iterator)->m_log_level <= m_application_log_level)
             {
-                (*iterator)->log_info(log_info);
+                //If we should then print to each active print target
+                for (auto target_iterator = m_log_targets.begin(); target_iterator != m_log_targets.end(); ++target_iterator)
+                {
+                    (*target_iterator)->log_info(*(*entry_iterator));
+                }
             }
-        }
-        //Maybe I should make this contingent on debug mode?
-        if( log_info.m_log_level == Log_Level::Fatal )
-        {
-            std::terminate();
         }
     }
 

@@ -170,6 +170,7 @@
     <ClCompile Include="src\Graphics\Root_Signature.cpp" />
     <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Event.cpp" />
+    <ClInclude Include="src\Log\Error.hpp" />
     <ClInclude Include="src\Graphics\Root_Signature.h" />
     <ClInclude Include="src\Graphics\Renderer.h" />
     <ClInclude Include="resources\shaders\pixel.hlsl" />
@@ -178,7 +179,7 @@
     <ClCompile Include="src\Log\Debugger_Log_Target.cpp" />
     <ClCompile Include="src\Log\Graphics_Error_Log_Entry.cpp" />
     <ClCompile Include="src\Log\Log_Entry.cpp" />
-    <ClCompile Include="src\Log\Log_Entry_Builder.cpp" />
+    <ClCompile Include="src\Log\Log_Builder.cpp" />
     <ClCompile Include="src\Log\Log_Manager.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -252,7 +253,7 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="src\Log\Log_Target.cpp" />
+    <ClCompile Include="src\Log\ILog_Target.cpp" />
     <ClCompile Include="src\Publisher.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\Window_Manager.cpp" />
@@ -266,10 +267,11 @@
     <ClInclude Include="src\Log\Console_Log_Target.h" />
     <ClInclude Include="src\Log\Debugger_Log_Target.h" />
     <ClInclude Include="src\Log\Graphics_Error_Log_Entry.h" />
+    <ClInclude Include="src\Log\Log.hpp" />
     <ClInclude Include="src\Log\Log_Entry.h" />
-    <ClInclude Include="src\Log\Log_Entry_Builder.h" />
+    <ClInclude Include="src\Log\Log_Builder.h" />
     <ClInclude Include="src\Log\Log_Manager.h" />
-    <ClInclude Include="src\Log\Log_Target.h" />
+    <ClInclude Include="src\Log\ILog_Target.h" />
     <ClInclude Include="src\Publisher.h" />
     <ClInclude Include="src\Utils\ISingleton.h" />
     <ClInclude Include="src\Utils\Utils.h" />

@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include "../Log/Log_Manager.h"
+#include "../Log/Error.hpp"
 #include "../Window.h"
 #include <d3dcompiler.h>
 
@@ -21,19 +21,19 @@ Renderer::Renderer(Window* window) :
 	//Enable Debug
 	{
 		ComPtr<ID3D12Debug> debug_controller;
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller)));
 		debug_controller->EnableDebugLayer();
 	}
 
 	ComPtr<IDXGIFactory4> dxgi_factory;
-	GRAPHICS_ASSERT(
+	DEBUG_ASSERT(
 		CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&dxgi_factory)));
 
 	ComPtr<IDXGIAdapter1> adapter;
 	GetHardwareAdapter(dxgi_factory.Get(), &adapter, true);
 
-	GRAPHICS_ASSERT(
+	DEBUG_ASSERT(
 		D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device)));
 	{
 		D3D12_COMMAND_QUEUE_DESC description =
@@ -41,7 +41,7 @@ Renderer::Renderer(Window* window) :
 			.Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
 			.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
 		};
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			m_device->CreateCommandQueue(&description, IID_PPV_ARGS(&m_command_queue)));
 	}
 
@@ -66,9 +66,9 @@ Renderer::Renderer(Window* window) :
 			.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
 			.Flags = 0,
 		};
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			dxgi_factory->CreateSwapChain(m_command_queue.Get(), &description, &tmp_swap_chain));
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			tmp_swap_chain.As(&m_swap_chain));
 	}
 	{
@@ -79,7 +79,7 @@ Renderer::Renderer(Window* window) :
 			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
 		};
 
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			m_device->CreateDescriptorHeap(&description, IID_PPV_ARGS(&m_rtv_descriptor_heap)));
 		m_rtv_descriptor_size = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
@@ -88,7 +88,7 @@ Renderer::Renderer(Window* window) :
 		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
 		for (UINT i = 0; i < buffer_count; i++)
 		{
-			GRAPHICS_ASSERT(
+			DEBUG_ASSERT(
 				m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_rtvs[i])));
 			m_device->CreateRenderTargetView(m_rtvs[i].Get(), nullptr, handle);
 			handle.Offset(1, m_rtv_descriptor_size);
@@ -105,14 +105,14 @@ Renderer::Renderer(Window* window) :
 	// Create the vertex buffer.
 
 
-	GRAPHICS_ASSERT(
+	DEBUG_ASSERT(
 		m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator)));
-	GRAPHICS_ASSERT(
+	DEBUG_ASSERT(
 		m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_command_allocator.Get(), m_pipeline_state.Get(), IID_PPV_ARGS(&m_command_list)));
-	GRAPHICS_ASSERT(
+	DEBUG_ASSERT(
 		m_command_list->Close());
 
-	GRAPHICS_ASSERT(
+	DEBUG_ASSERT(
 		m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
 	m_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
@@ -134,17 +134,17 @@ void Renderer::setup_pipeline()
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
 
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			D3D12SerializeRootSignature(&root_sig_description, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-		GRAPHICS_ASSERT(
+		DEBUG_ASSERT(
 			m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_root_signature)));
 	}
 
 	ComPtr<ID3DBlob> vertex_shader;
 	ComPtr<ID3DBlob> pixel_shader;
 	{
-		GRAPHICS_ASSERT(D3DCompileFromFile(get_shader_path(L"vert.hlsl").c_str(), nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertex_shader, nullptr));
-		GRAPHICS_ASSERT(D3DCompileFromFile(get_shader_path(L"pixel.hlsl").c_str(), nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixel_shader, nullptr));
+		DEBUG_ASSERT(D3DCompileFromFile(get_shader_path(L"vert.hlsl").c_str(), nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertex_shader, nullptr));
+		DEBUG_ASSERT(D3DCompileFromFile(get_shader_path(L"pixel.hlsl").c_str(), nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixel_shader, nullptr));
 	}
 	D3D12_INPUT_ELEMENT_DESC input_layout[] =
 	{
@@ -282,8 +282,8 @@ void Renderer::load_data()
 
 void Renderer::render()
 {
-	GRAPHICS_ASSERT(m_command_allocator->Reset());
-	GRAPHICS_ASSERT(m_command_list->Reset(m_command_allocator.Get(), m_pipeline_state.Get()));
+	DEBUG_ASSERT(m_command_allocator->Reset());
+	DEBUG_ASSERT(m_command_list->Reset(m_command_allocator.Get(), m_pipeline_state.Get()));
 
 	const int back_buffer_index = m_swap_chain->GetCurrentBackBufferIndex();
 
@@ -314,12 +314,12 @@ void Renderer::render()
 	const CD3DX12_RESOURCE_BARRIER swap_to_present= CD3DX12_RESOURCE_BARRIER::Transition(m_rtvs[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	m_command_list->ResourceBarrier(1, &swap_to_present);
 
-	GRAPHICS_ASSERT(m_command_list->Close());
+	DEBUG_ASSERT(m_command_list->Close());
 
 
 	ID3D12CommandList* const command_lists[] = { m_command_list.Get() };
 	m_command_queue->ExecuteCommandLists(std::size(command_lists), command_lists);
-	GRAPHICS_ASSERT(m_swap_chain->Present(1, 0));
+	DEBUG_ASSERT(m_swap_chain->Present(1, 0));
 	block();
 }
 
@@ -328,7 +328,7 @@ void Renderer::block()
 	m_command_queue->Signal(m_fence.Get(), ++m_fence_value);
 	if (m_fence->GetCompletedValue() < m_fence_value)
 	{
-		GRAPHICS_ASSERT(m_fence->SetEventOnCompletion(m_fence_value, m_fence_event));
+		DEBUG_ASSERT(m_fence->SetEventOnCompletion(m_fence_value, m_fence_event));
 		WaitForSingleObject(m_fence_event, INFINITE);
 	}
 }

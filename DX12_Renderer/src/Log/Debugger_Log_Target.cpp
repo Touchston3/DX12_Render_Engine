@@ -1,7 +1,7 @@
 #include "Debugger_Log_Target.h"
 #include <windows.h>
 Debugger_Log_Target::Debugger_Log_Target(std::wstring target_name) :
-    I_Log_Target(target_name)
+    ILog_Target(target_name)
 {
 }
 

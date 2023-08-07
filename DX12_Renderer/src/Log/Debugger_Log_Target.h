@@ -1,7 +1,7 @@
 #pragma once
-#include "Log_Target.h"
+#include "ILog_Target.h"
 
-class Debugger_Log_Target : public I_Log_Target
+class Debugger_Log_Target : public ILog_Target
 {
 public:
     Debugger_Log_Target(std::wstring target_name);

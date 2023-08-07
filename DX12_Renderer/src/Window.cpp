@@ -4,7 +4,7 @@
 
 #include "Input_Manager.h"
 #include <WinUser.h>
-#include "Log/Log_Manager.h"
+#include "Log/Log.hpp"
 
 using namespace void_renderer;
 
@@ -29,7 +29,7 @@ Window::Win32_Window_Class::Win32_Window_Class(std::wstring class_name, HINSTANC
 {
     if (RegisterClassExW(&m_class_definition) == 0)
     {
-        DEBUG_LOG_FATAL(L"Failed to register windows class {}", "");
+        ERROR_LOG_BUILDER().add_log(L"Failed to register windows class {}", "").print();
     }
 }
 
@@ -98,7 +98,7 @@ Window::Window(int width, int height, HINSTANCE hInstance, std::wstring class_na
 {
     if (m_window_handler == nullptr)
     {
-        DEBUG_LOG_FATAL(L"Failed to create window {}", "");
+        ERROR_LOG_BUILDER().add_log(L"Failed to create window {}", "").print();
     }
     ShowWindow(m_window_handler, SW_SHOW);
     this->m_renderer = new Renderer(this);

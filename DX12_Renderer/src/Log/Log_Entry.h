@@ -9,9 +9,11 @@ enum class Log_Level
     Warning,
     Info,
 };
+
 class ILog_Entry
 {
 public:
+
     ILog_Entry(int line_number, const std::wstring& function_name, const std::wstring& file_name, Log_Level log_level);
     virtual std::wstring format() const = 0;
     std::wstring log_level_string(Log_Level log_level) const;
