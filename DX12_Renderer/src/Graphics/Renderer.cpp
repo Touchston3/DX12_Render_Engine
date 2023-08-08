@@ -10,14 +10,11 @@ using namespace DirectX;
 Renderer::Renderer(Window* window) :
 	m_window(window),
 	m_fence_value(0),
-	m_command_allocator(),
-	m_command_list(),
 	m_rtv_descriptor_size(0),
 	m_scissor_rect(0, 0, (LONG)window->get_width(), (LONG)window->get_height()),
 	m_viewport(0.0f, 0.0f, float(m_window->get_width()), float(m_window->get_height()))
 {
 
-	const UINT buffer_count = 2;
 	//Enable Debug
 	{
 		ComPtr<ID3D12Debug> debug_controller;
@@ -27,93 +24,32 @@ Renderer::Renderer(Window* window) :
 	}
 
 	ComPtr<IDXGIFactory4> dxgi_factory;
-	DEBUG_ASSERT(
-		CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&dxgi_factory)));
+	{
+		DEBUG_ASSERT(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&dxgi_factory)));
 
-	ComPtr<IDXGIAdapter1> adapter;
-	GetHardwareAdapter(dxgi_factory.Get(), &adapter, true);
+		ComPtr<IDXGIAdapter1> adapter;
+		GetHardwareAdapter(dxgi_factory.Get(), &adapter, true);
 
-	DEBUG_ASSERT(
-		D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device)));
+		DEBUG_ASSERT(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device)));
+	}
 	{
 		D3D12_COMMAND_QUEUE_DESC description =
 		{
 			.Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
 			.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
 		};
-		DEBUG_ASSERT(
-			m_device->CreateCommandQueue(&description, IID_PPV_ARGS(&m_command_queue)));
+		DEBUG_ASSERT(m_device->CreateCommandQueue(&description, IID_PPV_ARGS(&m_command_queue)));
 	}
-
-	{
-		ComPtr<IDXGISwapChain> tmp_swap_chain;
-		DXGI_SWAP_CHAIN_DESC description =
-		{
-			.BufferDesc =
-			{
-				.Width = (UINT)m_window->get_width(),
-				.Height = (UINT)m_window->get_height(),
-				.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-			},
-			.SampleDesc =
-			{
-				.Count = 1,
-			},
-			.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-			.BufferCount = buffer_count,
-			.OutputWindow = m_window->get_window_handler(),
-			.Windowed = TRUE,
-			.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
-			.Flags = 0,
-		};
-		DEBUG_ASSERT(
-			dxgi_factory->CreateSwapChain(m_command_queue.Get(), &description, &tmp_swap_chain));
-		DEBUG_ASSERT(
-			tmp_swap_chain.As(&m_swap_chain));
-	}
-	{
-		D3D12_DESCRIPTOR_HEAP_DESC description =
-		{
-			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-			.NumDescriptors = buffer_count,
-			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-		};
-
-		DEBUG_ASSERT(
-			m_device->CreateDescriptorHeap(&description, IID_PPV_ARGS(&m_rtv_descriptor_heap)));
-		m_rtv_descriptor_size = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	}
-
-	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-		for (UINT i = 0; i < buffer_count; i++)
-		{
-			DEBUG_ASSERT(
-				m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_rtvs[i])));
-			m_device->CreateRenderTargetView(m_rtvs[i].Get(), nullptr, handle);
-			handle.Offset(1, m_rtv_descriptor_size);
-		}
-	}
+	m_swap_chain = new Swap_Chain(*m_window, *(dxgi_factory.Get()), *(m_command_queue.Get()));
+	setup_descriptor_heaps();
 	setup_pipeline();
 	load_data();
 
-	// Create the command list.
+	DEBUG_ASSERT(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator)));
+	DEBUG_ASSERT(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_command_allocator.Get(), m_pipeline_state.Get(), IID_PPV_ARGS(&m_command_list)));
+	DEBUG_ASSERT(m_command_list->Close());
 
-	// Command lists are created in the recording state, but there is nothing
-	// to record yet. The main loop expects it to be closed, so close it now.
-
-	// Create the vertex buffer.
-
-
-	DEBUG_ASSERT(
-		m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator)));
-	DEBUG_ASSERT(
-		m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_command_allocator.Get(), m_pipeline_state.Get(), IID_PPV_ARGS(&m_command_list)));
-	DEBUG_ASSERT(
-		m_command_list->Close());
-
-	DEBUG_ASSERT(
-		m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
+	DEBUG_ASSERT(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
 	m_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 
@@ -121,6 +57,30 @@ Renderer::Renderer(Window* window) :
 	block();
 }
 
+void Renderer::setup_descriptor_heaps()
+{
+	{
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC description =
+		{
+			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+			.NumDescriptors = 2,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		};
+		DEBUG_ASSERT(m_device->CreateDescriptorHeap(&description, IID_PPV_ARGS(&m_rtv_descriptor_heap)));
+		m_rtv_descriptor_size = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	}
+	{
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC description =
+		{
+			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+			.NumDescriptors = 1,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		};
+		DEBUG_ASSERT(m_device->CreateDescriptorHeap(&description, IID_PPV_ARGS(&m_dsv_descriptor_heap)));
+	}
+
+	
+}
 void Renderer::setup_pipeline()
 {
 	{
@@ -161,6 +121,7 @@ void Renderer::setup_pipeline()
 			CD3DX12_PIPELINE_STATE_STREAM_VS m_vs;
 			CD3DX12_PIPELINE_STATE_STREAM_PS m_ps;
 			CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS m_rtv_formats;
+			CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT m_dsv_format;
 		};
 
 		Pipeline_State_Stream pipeline_state_stream =
@@ -170,7 +131,8 @@ void Renderer::setup_pipeline()
 			.m_primitive_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 			.m_vs = CD3DX12_SHADER_BYTECODE(vertex_shader.Get()),
 			.m_ps = CD3DX12_SHADER_BYTECODE(pixel_shader.Get()),
-			.m_rtv_formats = CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS({{ DXGI_FORMAT_R8G8B8A8_UNORM }, 1 })
+			.m_rtv_formats = CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS({{ DXGI_FORMAT_R8G8B8A8_UNORM }, 1 }),
+			.m_dsv_format = DXGI_FORMAT_D32_FLOAT,
 		};
 
 		const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc = { sizeof(Pipeline_State_Stream), &pipeline_state_stream };
@@ -202,7 +164,7 @@ void Renderer::load_data()
 		{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
 		{ { 1.0f, -1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
 	};
-	const UINT vertexBufferSize = sizeof(triangleVertices);
+	constexpr UINT vertexBufferSize = sizeof(triangleVertices);
 	
 	const unsigned short index_buffer_data[] =
 	{
@@ -219,7 +181,7 @@ void Renderer::load_data()
 			4, 0, 3, 
 			4, 3, 7,
 		};
-	const UINT index_buffer_size = sizeof(index_buffer_data);
+	constexpr UINT index_buffer_size = sizeof(index_buffer_data);
 
 	// Note: using upload heaps to transfer static data like vert buffers is not 
 	// recommended. Every time the GPU needs it, the upload heap will be marshalled 
@@ -249,6 +211,30 @@ void Renderer::load_data()
 			IID_PPV_ARGS(&m_index_buffer)
 		);
 	}
+	{
+		const auto heap_props = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+		const auto resource_desc = CD3DX12_RESOURCE_DESC::Tex2D
+		(
+			DXGI_FORMAT_D32_FLOAT,
+			m_window->get_width(),
+			m_window->get_height(),
+			1, 0, 1, 0,
+			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+		);
+		const D3D12_CLEAR_VALUE clear_value =
+		{
+			.Format = DXGI_FORMAT_D32_FLOAT,
+			.DepthStencil = { 1.0f, 0},
+		};
+		m_device->CreateCommittedResource(
+			&heap_props,
+			D3D12_HEAP_FLAG_NONE,
+			&resource_desc,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			&clear_value,
+			IID_PPV_ARGS(&m_depth_buffer)
+		);
+	}
 
 
 	// Copy the triangle data to the vertex buffer.
@@ -266,6 +252,19 @@ void Renderer::load_data()
 		memcpy(gpu_ibuffer_handle, index_buffer_data, index_buffer_size);
 		m_index_buffer->Unmap(0, nullptr);
 	}
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+		for (UINT i = 0; i < 2; i++)
+		{
+			DEBUG_ASSERT(m_swap_chain->Get()->GetBuffer(i, IID_PPV_ARGS(&m_rtvs[i])));
+			m_device->CreateRenderTargetView(m_rtvs[i].Get(), nullptr, handle);
+			handle.Offset(1, m_rtv_descriptor_size);
+		}
+	}
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+		m_device->CreateDepthStencilView(m_depth_buffer.Get(), nullptr, handle);
+	}
 	m_vbuffer_description =
 	{
 		.BufferLocation = m_vertex_buffer->GetGPUVirtualAddress(),
@@ -280,28 +279,31 @@ void Renderer::load_data()
 	};
 }
 
+
 void Renderer::render()
 {
 	DEBUG_ASSERT(m_command_allocator->Reset());
 	DEBUG_ASSERT(m_command_list->Reset(m_command_allocator.Get(), m_pipeline_state.Get()));
 
-	const int back_buffer_index = m_swap_chain->GetCurrentBackBufferIndex();
+	const int back_buffer_index = m_swap_chain->Get()->GetCurrentBackBufferIndex();
 
 	m_command_list->SetGraphicsRootSignature(m_root_signature.Get());
 	m_command_list->SetPipelineState(m_pipeline_state.Get());
 	m_command_list->RSSetViewports(1, &m_viewport);
 	m_command_list->RSSetScissorRects(1, &m_scissor_rect);
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(m_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, m_rtv_descriptor_size);
-
+	const CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(m_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, m_rtv_descriptor_size);
+	const CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(m_dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
 	const CD3DX12_RESOURCE_BARRIER swap_to_write = CD3DX12_RESOURCE_BARRIER::Transition(m_rtvs[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	m_command_list->ResourceBarrier(1, &swap_to_write);
 
 	constexpr FLOAT clear_color[] = {0.4f, 0.6f, 0.9f, 1.0f};
-	m_command_list->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
+	m_command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, &dsv_handle);
 
 
-	m_command_list->ClearRenderTargetView(rtv, clear_color, 0, nullptr);
+	m_command_list->ClearRenderTargetView(rtv_handle, clear_color, 0, nullptr);
+	m_command_list->ClearDepthStencilView(dsv_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
 	m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	m_command_list->IASetVertexBuffers(0, 1, &m_vbuffer_description);
@@ -319,7 +321,7 @@ void Renderer::render()
 
 	ID3D12CommandList* const command_lists[] = { m_command_list.Get() };
 	m_command_queue->ExecuteCommandLists(std::size(command_lists), command_lists);
-	DEBUG_ASSERT(m_swap_chain->Present(1, 0));
+	DEBUG_ASSERT(m_swap_chain->Get()->Present(1, 0));
 	block();
 }
 
@@ -402,4 +404,11 @@ void Renderer::GetHardwareAdapter(
 	}
 
 	*ppAdapter = adapter.Detach();
+}
+
+Renderer::~Renderer()
+{
+	block();
+
+	delete(m_swap_chain);
 }

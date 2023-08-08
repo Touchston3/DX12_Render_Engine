@@ -1,11 +1,7 @@
 #pragma once
 #include "Log_Builder.h"
-#include "Log_Manager.h"
 #include "ILog_Target.h"
 #include <vector>
-#include "../Utils/ISingleton.h"
-
-//TODO: Fix function name for logging macros. Investigate stack tracing. Also add correct constructors
 
 namespace void_renderer
 {

@@ -8,7 +8,7 @@
 
 using namespace void_renderer;
 
-Window::Win32_Window_Class::Win32_Window_Class(std::wstring class_name, HINSTANCE hInstance) :
+Window::Class::Class(std::wstring class_name, HINSTANCE hInstance) :
     m_hInstance(hInstance),
     m_class_name(class_name),
     m_class_definition
@@ -33,12 +33,12 @@ Window::Win32_Window_Class::Win32_Window_Class(std::wstring class_name, HINSTANC
     }
 }
 
-Window::Win32_Window_Class::~Win32_Window_Class()
+Window::Class::~Class()
 {
     UnregisterClass(m_class_name.c_str(), m_hInstance);
 }
 
-LRESULT Window::Win32_Window_Class::msg_handler(HWND window_handler, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT Window::Class::msg_handler(HWND window_handler, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
     {
@@ -80,7 +80,7 @@ Window::Window(int width, int height, HINSTANCE hInstance, std::wstring class_na
     m_width(width),
     m_height(height),
     m_class_name(class_name),
-    m_window_class(Win32_Window_Class(class_name, hInstance)),
+    m_window_class(Window::Class(class_name, hInstance)),
     m_msg({}),
     m_window_handler(CreateWindow
     (
@@ -93,8 +93,7 @@ Window::Window(int width, int height, HINSTANCE hInstance, std::wstring class_na
         nullptr,
         hInstance,
         nullptr)
-    ),
-    m_renderer(nullptr)
+    )
 {
     if (m_window_handler == nullptr)
     {
@@ -124,6 +123,6 @@ void Window::handle_events()
 
 void Window::attach_event_handler(std::function<void(Event&)> handler_cb)
 {
-    Win32_Window_Class::set_message_handler(handler_cb);
+    Class::set_message_handler(handler_cb);
     SetWindowLongPtr(m_window_handler, GWLP_WNDPROC, (LONG_PTR)m_window_class.msg_handler);
 }

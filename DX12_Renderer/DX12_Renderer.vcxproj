@@ -167,13 +167,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Constant.cpp" />
+    <ClCompile Include="src\Graphics\Descriptor_Heap.cpp" />
+    <ClCompile Include="src\Graphics\Pipeline_State_Object.cpp" />
     <ClCompile Include="src\Graphics\Root_Signature.cpp" />
     <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Event.cpp" />
+    <ClInclude Include="src\Graphics\Constant.hpp" />
+    <ClInclude Include="src\Graphics\Descriptor_Heap.hpp" />
+    <ClInclude Include="src\Graphics\Pipeline_State_Object.hpp" />
+    <ClInclude Include="src\Graphics\Swap_Chain.hpp" />
     <ClInclude Include="src\Log\Error.hpp" />
-    <ClInclude Include="src\Graphics\Root_Signature.h" />
+    <ClInclude Include="src\Graphics\Root_Signature.hpp" />
     <ClInclude Include="src\Graphics\Renderer.h" />
     <ClInclude Include="resources\shaders\pixel.hlsl" />
+    <ClCompile Include="src\Graphics\Swap_Chain.cpp" />
     <ClCompile Include="src\Input_Manager.cpp" />
     <ClCompile Include="src\Log\Console_Log_Target.cpp" />
     <ClCompile Include="src\Log\Debugger_Log_Target.cpp" />
@@ -256,7 +264,6 @@
     <ClCompile Include="src\Log\ILog_Target.cpp" />
     <ClCompile Include="src\Publisher.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\Window_Manager.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -276,7 +283,6 @@
     <ClInclude Include="src\Utils\ISingleton.h" />
     <ClInclude Include="src\Utils\Utils.h" />
     <ClInclude Include="src\Window.h" />
-    <ClInclude Include="src\Window_Manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
