@@ -6,7 +6,9 @@
 #include <WinUser.h>
 #include "Log/Log.hpp"
 
-using namespace void_renderer;
+using namespace VE;
+using namespace VE::GFX;
+using namespace VE::Log;
 
 Window::Class::Class(std::wstring class_name, HINSTANCE hInstance) :
     m_hInstance(hInstance),

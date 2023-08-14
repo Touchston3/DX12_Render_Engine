@@ -2,6 +2,7 @@
 #include <format>
 #include <comdef.h>
 
+using namespace VE::Log;
 Graphics_Error_Log_Entry::Graphics_Error_Log_Entry(int line_number, const std::wstring& function_name, const std::wstring& file_name, Log_Level log_level, HRESULT hresult) :
     ILog_Entry(line_number, function_name, file_name, log_level),
     m_hresult(hresult)

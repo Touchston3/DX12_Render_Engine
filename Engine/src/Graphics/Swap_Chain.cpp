@@ -1,7 +1,7 @@
 ﻿#include "Swap_Chain.hpp"
 #include "../Log/Error.hpp"
 #include "../Window.h"
-using namespace void_renderer;
+using namespace VE::GFX;
 Swap_Chain::Swap_Chain(Window& window, IDXGIFactory4& factory, ID3D12CommandQueue& command_queue) :
 	m_buffer_count(2) //temp
 {

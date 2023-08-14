@@ -4,7 +4,7 @@
 #include <fstream>
 #include <filesystem>
 
-namespace void_renderer::utils {
+namespace VE::Utils {
 
     template<typename T, typename... Args>
     void format_helper(std::wstringstream& stream, const std::wstring& base, T arg, Args... args)

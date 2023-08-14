@@ -1,7 +1,11 @@
 #pragma once
 
-class Publisher
+
+namespace VE
 {
-public:
-    
-};
+	class Publisher
+	{
+	public:
+
+	};
+}

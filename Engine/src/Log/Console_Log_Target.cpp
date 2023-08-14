@@ -1,6 +1,7 @@
 #include "Console_Log_Target.h"
 #include <iostream>
 
+using namespace VE::Log;
 Console_Log_Target::Console_Log_Target(std::wstring target_name):
     ILog_Target(target_name)
 {

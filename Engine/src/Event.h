@@ -2,7 +2,7 @@
 
 //TODO: Fix enums
 
-namespace void_renderer
+namespace VE 
 {
     enum class Event_Type
     {

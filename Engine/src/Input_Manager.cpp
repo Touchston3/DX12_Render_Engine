@@ -1,6 +1,6 @@
 #include "Input_Manager.h"
 #include "Log/Log_Manager.h"
-using namespace void_renderer;
+using namespace VE;
 void Input_Manager::handle_window_input(Event& e)
 {
     switch(e.m_event_type)

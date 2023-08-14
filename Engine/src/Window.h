@@ -5,7 +5,7 @@
 #include "string"
 #include "Graphics/Renderer.h"
 
-namespace void_renderer
+namespace VE 
 {
     class Window
     {
@@ -51,6 +51,6 @@ namespace void_renderer
         MSG m_msg;
         HWND m_window_handler;
 
-        Renderer* m_renderer;
+        GFX::Renderer* m_renderer;
     };
 }

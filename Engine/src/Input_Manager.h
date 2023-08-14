@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.h"
 
-namespace void_renderer
+namespace VE 
 {
     class Input_Manager
     {

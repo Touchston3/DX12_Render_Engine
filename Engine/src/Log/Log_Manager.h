@@ -3,7 +3,7 @@
 #include "ILog_Target.h"
 #include <vector>
 
-namespace void_renderer
+namespace VE::Log 
 {
     class Log_Manager 
     {

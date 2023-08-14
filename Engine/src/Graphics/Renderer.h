@@ -8,10 +8,13 @@
 #include <DirectXMath.h>
 #include "Swap_Chain.hpp"
 #include "Resource/Buffer_Resource.hpp"
-//This should honestly probably live in the window namespace. Once I abstract out the verbosity I will probs move it there. 
-namespace void_renderer 
+
+namespace VE
 {
 	class Window;
+}
+namespace VE::GFX 
+{
 	struct Vertex
 	{
 		DirectX::XMFLOAT3 m_position;

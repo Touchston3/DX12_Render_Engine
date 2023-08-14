@@ -1,6 +1,7 @@
 #include "Log_Entry.h"
 #include <format>
 
+using namespace VE::Log;
 ILog_Entry::ILog_Entry(int line_number, const std::wstring& function_name, const std::wstring& file_name, Log_Level log_level) :
     m_line_number(line_number),
     m_function_name(function_name),

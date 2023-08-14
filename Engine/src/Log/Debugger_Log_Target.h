@@ -1,11 +1,14 @@
 #pragma once
 #include "ILog_Target.h"
 
-class Debugger_Log_Target : public ILog_Target
+namespace VE::Log
 {
-public:
-    Debugger_Log_Target(std::wstring target_name);
-    ~Debugger_Log_Target() override;
+    class Debugger_Log_Target : public ILog_Target
+    {
+    public:
+        Debugger_Log_Target(std::wstring target_name);
+        ~Debugger_Log_Target() override;
 
-    void log_info(const ILog_Entry& log_info) override; 
-};
+        void log_info(const ILog_Entry& log_info) override;
+    };
+}

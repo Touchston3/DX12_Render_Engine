@@ -1,7 +1,7 @@
 #include "Log_Builder.h"
 #include "Log_Manager.h"
 
-
+using namespace VE::Log;
 Log_Builder& Log_Builder::add_log(HRESULT hresult)
 {
     Graphics_Error_Log_Entry* graphics_error_log = new Graphics_Error_Log_Entry(m_line_number, m_function_name, m_file_name, m_log_level, hresult);
@@ -18,7 +18,7 @@ Log_Builder& Log_Builder::add_log(const std::wstring& message)
 
 void Log_Builder::print()
 {
-    void_renderer::Log_Manager::get()->log(m_log_entries);
+    Log_Manager::get()->log(m_log_entries);
 }
 
 Log_Builder::Log_Builder(int line_number, const std::wstring& function_name, const std::wstring& file_name, Log_Level log_level) :

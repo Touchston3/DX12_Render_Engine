@@ -1,9 +1,12 @@
 ﻿#pragma once
 
 //This should be iteratable. 
-class Descriptor_Heap
-
+namespace VE::GFX
 {
-public:
-	
-};
+	class Descriptor_Heap
+
+	{
+	public:
+
+	};
+}

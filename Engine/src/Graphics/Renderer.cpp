@@ -5,7 +5,10 @@
 #include "DirectXTex.h"
 #include "../Utils/Utils.h"
 
-using namespace void_renderer;
+using namespace VE::GFX;
+using namespace VE::Log;
+using namespace VE::Error;
+using namespace VE::Utils;
 using namespace Microsoft::WRL;
 using namespace DirectX;
 

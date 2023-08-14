@@ -3,9 +3,12 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-namespace void_renderer
+namespace VE
 {
 	class Window;
+}
+namespace VE::GFX 
+{
 	class Swap_Chain
 	{
 	public:
