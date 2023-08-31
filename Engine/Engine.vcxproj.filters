@@ -57,25 +57,34 @@
     <ClCompile Include="src\Graphics\Root_Signature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Constant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\Pipeline_State_Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\Swap_Chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Descriptor_Heap.cpp">
+    <ClCompile Include="src\Graphics\Resources\Resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Resource\Buffer_Resource.cpp">
+    <ClCompile Include="src\Graphics\Resources\Resource_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Resource\IResource.cpp">
+    <ClCompile Include="src\Graphics\Resources\Resource_View_Heap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Resource\Texture_Resource.cpp">
+    <ClCompile Include="src\Graphics\Resources\Index_Buffer_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Resources\Vertex_Buffer_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Resources\Depth_Stencil_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Resources\Buffer_Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Resources\Texture_Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Resources\Render_Target_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -133,25 +142,34 @@
     <ClInclude Include="src\Log\Error.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Constant.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\Pipeline_State_Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\Swap_Chain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Descriptor_Heap.hpp">
+    <ClInclude Include="src\Graphics\Resources\Resource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Resource\Buffer_Resource.hpp">
+    <ClInclude Include="src\Graphics\Resources\Resource_View.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Resource\IResource.hpp">
+    <ClInclude Include="src\Graphics\Resources\Resource_View_Heap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Resource\Texture_Resource.hpp">
+    <ClInclude Include="src\Graphics\Resources\Index_Buffer_View.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Resources\Vertex_Buffer_View.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Resources\Depth_Stencil_View.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Resources\Buffer_Resource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Resources\Texture_Resource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Resources\Render_Target_View.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

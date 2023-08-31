@@ -7,8 +7,13 @@
 #include <dxgi1_6.h>
 #include <DirectXMath.h>
 #include "Swap_Chain.hpp"
-#include "Resource/Buffer_Resource.hpp"
-
+#include "Resources/Vertex_Buffer_View.hpp"
+#include "Resources/Index_Buffer_View.hpp"
+#include "Resources/Resource_View_Heap.hpp"
+#include "Resources/Depth_Stencil_View.hpp"
+#include "Resources/Buffer_Resource.hpp"
+#include "Resources/Texture_Resource.hpp"
+#include "Resources/Render_Target_View.hpp"
 namespace VE
 {
 	class Window;
@@ -30,33 +35,37 @@ namespace VE::GFX
 		void setup_pipeline();
 		void load_data();
 		void block();
-		void setup_descriptor_heaps();
 
 		std::wstring get_shader_path(const std::wstring& name);
 		void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter);
 	private:
 		Window* m_window;
 		UINT64 m_fence_value;
-		UINT m_rtv_descriptor_size;
 		CD3DX12_RECT m_scissor_rect;
 		CD3DX12_VIEWPORT m_viewport;
 
 		Microsoft::WRL::ComPtr<ID3D12Device2> m_device;
 
-		Microsoft::WRL::ComPtr<ID3D12Resource> m_rtvs[2];
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtv_descriptor_heap;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsv_descriptor_heap;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_srv_descriptor_heap;
 
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_root_signature;
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipeline_state;
 
-		D3D12_VERTEX_BUFFER_VIEW m_vbuffer_description;
-		D3D12_INDEX_BUFFER_VIEW m_ibuffer_description;
-		Buffer_Resource* m_vertex_buffer;
-		Buffer_Resource* m_index_buffer;
+		Resources::Buffer_Resource* m_index_buffer_resource;
+		Resources::Buffer_Resource* m_vertex_buffer_resource;
+		Resources::Texture_Resource* m_depth_stencil_resource;
+		Resources::Texture_Resource* m_texture_resource;
+		Resources::Resource* m_render_target_resources[2]; 
+
+		Resources::Index_Buffer_View* m_ibv;
+		Resources::Vertex_Buffer_View* m_vbv;
+		Resources::Depth_Stencil_View* m_dsv;
+		Resources::Render_Target_View* m_rtvs[2];
+
+		Resources::Resource_View_Heap* m_dsv_heap;
+		Resources::Resource_View_Heap* m_rtv_heap;
+		Resources::Resource_View_Heap* m_srv_heap;
+
 		Microsoft::WRL::ComPtr<ID3D12Resource> m_depth_buffer;
-		Microsoft::WRL::ComPtr<ID3D12Resource> m_texture;
 		const UINT m_index_count = 36;
 
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_command_queue;
@@ -70,3 +79,12 @@ namespace VE::GFX
 
 	};
 }
+
+/*
+	Planning application:
+		-Resource and Resource View objects
+		-- Note: CBVs, UAVs, SRVs, and samplers are the only views visible to shaders
+
+
+
+*/

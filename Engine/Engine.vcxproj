@@ -178,21 +178,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Graphics\Resource\Buffer_Resource.cpp" />
-    <ClCompile Include="src\Graphics\Constant.cpp" />
-    <ClCompile Include="src\Graphics\Descriptor_Heap.cpp" />
-    <ClCompile Include="src\Graphics\Pipeline_State_Object.cpp" />
-    <ClCompile Include="src\Graphics\Resource\IResource.cpp" />
-    <ClCompile Include="src\Graphics\Resource\Texture_Resource.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Buffer_Resource.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Depth_Stencil_View.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Index_Buffer_View.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Render_Target_View.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Resource.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Texture_Resource.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Vertex_Buffer_View.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Resource_View.cpp" />
+    <ClCompile Include="src\Graphics\Resources\Resource_View_Heap.cpp" />
     <ClCompile Include="src\Graphics\Root_Signature.cpp" />
     <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Event.cpp" />
-    <ClInclude Include="src\Graphics\Resource\Buffer_Resource.hpp" />
-    <ClInclude Include="src\Graphics\Constant.hpp" />
-    <ClInclude Include="src\Graphics\Descriptor_Heap.hpp" />
-    <ClInclude Include="src\Graphics\Pipeline_State_Object.hpp" />
-    <ClInclude Include="src\Graphics\Resource\IResource.hpp" />
-    <ClInclude Include="src\Graphics\Resource\Texture_Resource.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Buffer_Resource.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Depth_Stencil_View.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Index_Buffer_View.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Render_Target_View.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Resource.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Texture_Resource.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Vertex_Buffer_View.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Resource_View.hpp" />
+    <ClInclude Include="src\Graphics\Resources\Resource_View_Heap.hpp" />
     <ClInclude Include="src\Graphics\Swap_Chain.hpp" />
     <ClInclude Include="src\Log\Error.hpp" />
     <ClInclude Include="src\Graphics\Root_Signature.hpp" />
